@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vocabulary Builder</title>
+    <style>
+        @font-face {
+            font-family: 'NotoDevanagari';
+            src: url('file:///D:/Automation/NotoSansDevanagari.ttf');
+            font-weight: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .page {
+            page-break-after: always;
+            padding: 15px;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e1b4b;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .word-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 0;
+            page-break-inside: avoid;
+        }
+
+        .word-separator {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 25px 0;
+        }
+
+        .word-heading {
+            margin-bottom: 12px;
+        }
+
+        .word-heading h2 {
+            font-size: 24px;
+            font-weight: bold;
+            display: inline;
+        }
+
+        .color-orange h2 { color: #ea580c; }
+        .color-teal h2 { color: #0d9488; }
+        .color-purple h2 { color: #9333ea; }
+        .color-pink h2 { color: #db2777; }
+        .color-blue h2 { color: #2563eb; }
+        .color-green h2 { color: #16a34a; }
+
+        .part-of-speech {
+            font-size: 12px;
+            font-style: italic;
+            color: #6b7280;
+            margin-left: 10px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .hindi-content {
+            margin-left: 10px;
+            margin-bottom: 12px;
+        }
+
+        .hindi-script {
+            font-family: 'NotoDevanagari', 'Nirmala', sans-serif;
+            font-size: 16px;
+            color: #1e1b4b;
+            margin-bottom: 4px;
+        }
+
+        .transliteration {
+            font-size: 12px;
+            font-style: italic;
+            color: #6b7280;
+        }
+
+        .english-content {
+            margin-left: 10px;
+            margin-bottom: 12px;
+        }
+
+        .english-meaning {
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        .examples-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .examples-list li {
+            font-size: 12px;
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            list-style-type: none;
+            position: relative;
+        }
+
+        .examples-list li::before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            font-weight: bold;
+        }
+
+        .color-orange .examples-list li { background-color: #fff7ed; color: #9a3412; }
+        .color-orange .examples-list li::before { color: #ea580c; }
+
+        .color-teal .examples-list li { background-color: #f0fdfa; color: #115e59; }
+        .color-teal .examples-list li::before { color: #0d9488; }
+
+        .color-purple .examples-list li { background-color: #faf5ff; color: #6b21a8; }
+        .color-purple .examples-list li::before { color: #9333ea; }
+
+        .color-pink .examples-list li { background-color: #fdf2f8; color: #9d174d; }
+        .color-pink .examples-list li::before { color: #db2777; }
+
+        .color-blue .examples-list li { background-color: #eff6ff; color: #1e40af; }
+        .color-blue .examples-list li::before { color: #2563eb; }
+
+        .color-green .examples-list li { background-color: #f0fdf4; color: #166534; }
+        .color-green .examples-list li::before { color: #16a34a; }
+
+        .alternates-content {
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        .alternates-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .alternate-tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 15px;
+            margin: 3px 5px 3px 0;
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px dashed #e5e7eb;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="page">
+        <div class="header">
+            <h1>Vocabulary Builder</h1>
+            <div class="subtitle">Day 20 — 5 Words with Hindi &amp; English Meanings</div>
+        </div>
+
+        
+        <div class="word-card color-orange">
+            <div class="word-heading">
+                <h2>Mellifluous</h2>
+                <span class="part-of-speech">adjective</span>
+            </div>
+
+            <div class="section-label">HINDI MEANING</div>
+            <div class="hindi-content">
+                <div class="hindi-script">मधुर / सुरीला / मीठा</div>
+                <div class="transliteration">*Madhur / Sureela / Meetha*</div>
+            </div>
+
+            <div class="section-label">ENGLISH MEANING</div>
+            <div class="english-content">
+                <div class="english-meaning">Sweet or musical; pleasant to hear.</div>
+                <ul class="examples-list">
+                    
+                    <li>The singer captivated the audience with her mellifluous voice.</li>
+                    
+                    <li>He fell asleep listening to the mellifluous sound of the rain.</li>
+                    
+                    <li>The flute played a mellifluous tune that echoed through the valley.</li>
+                    
+                </ul>
+            </div>
+
+            <div class="alternates-content">
+                <div class="alternates-label">ALTERNATE WORDS:</div>
+                
+                <span class="alternate-tag">dulcet</span>
+                
+                <span class="alternate-tag">melodious</span>
+                
+                <span class="alternate-tag">musical</span>
+                
+                <span class="alternate-tag">sweet-sounding</span>
+                
+                <span class="alternate-tag">harmonious</span>
+                
+            </div>
+        </div>
+
+        
+        <hr class="word-separator">
+        
+        
+        <div class="word-card color-teal">
+            <div class="word-heading">
+                <h2>Alacrity</h2>
+                <span class="part-of-speech">noun</span>
+            </div>
+
+            <div class="section-label">HINDI MEANING</div>
+            <div class="hindi-content">
+                <div class="hindi-script">तत्परता / उत्सुकता / तेजी</div>
+                <div class="transliteration">*Tatparta / Utsukta / Teji*</div>
+            </div>
+
+            <div class="section-label">ENGLISH MEANING</div>
+            <div class="english-content">
+                <div class="english-meaning">Brisk and cheerful readiness to do something.</div>
+                <ul class="examples-list">
+                    
+                    <li>She accepted the job offer with alacrity.</li>
+                    
+                    <li>The eager students responded to the teacher's question with alacrity.</li>
+                    
+                    <li>He moved with surprising alacrity for a man of his age.</li>
+                    
+                </ul>
+            </div>
+
+            <div class="alternates-content">
+                <div class="alternates-label">ALTERNATE WORDS:</div>
+                
+                <span class="alternate-tag">eagerness</span>
+                
+                <span class="alternate-tag">readiness</span>
+                
+                <span class="alternate-tag">enthusiasm</span>
+                
+                <span class="alternate-tag">promptness</span>
+                
+                <span class="alternate-tag">zeal</span>
+                
+            </div>
+        </div>
+
+        
+        <hr class="word-separator">
+        
+        
+        <div class="word-card color-purple">
+            <div class="word-heading">
+                <h2>Obfuscate</h2>
+                <span class="part-of-speech">verb</span>
+            </div>
+
+            <div class="section-label">HINDI MEANING</div>
+            <div class="hindi-content">
+                <div class="hindi-script">अस्पष्ट करना / भ्रमित करना / उलझाना</div>
+                <div class="transliteration">*Aspasht karna / Bhramit karna / Uljhaana*</div>
+            </div>
+
+            <div class="section-label">ENGLISH MEANING</div>
+            <div class="english-content">
+                <div class="english-meaning">To deliberately make something unclear or difficult to understand.</div>
+                <ul class="examples-list">
+                    
+                    <li>The politician tried to obfuscate the issue with vague answers.</li>
+                    
+                    <li>Do not write complex code that will only obfuscate the main logic.</li>
+                    
+                    <li>Her accusation was designed to obfuscate the truth of the matter.</li>
+                    
+                </ul>
+            </div>
+
+            <div class="alternates-content">
+                <div class="alternates-label">ALTERNATE WORDS:</div>
+                
+                <span class="alternate-tag">confuse</span>
+                
+                <span class="alternate-tag">complicate</span>
+                
+                <span class="alternate-tag">blur</span>
+                
+                <span class="alternate-tag">muddle</span>
+                
+                <span class="alternate-tag">cloud</span>
+                
+            </div>
+        </div>
+
+        
+        
+
+        
+    </div>
+    
+    <div class="page">
+        <div class="header">
+            <h1>Vocabulary Builder</h1>
+            <div class="subtitle">Day 20 — 5 Words with Hindi &amp; English Meanings</div>
+        </div>
+
+        
+        <div class="word-card color-pink">
+            <div class="word-heading">
+                <h2>Capricious</h2>
+                <span class="part-of-speech">adjective</span>
+            </div>
+
+            <div class="section-label">HINDI MEANING</div>
+            <div class="hindi-content">
+                <div class="hindi-script">मनमौजी / अस्थिर / सनकी</div>
+                <div class="transliteration">*Manmauji / Asthir / Sanki*</div>
+            </div>
+
+            <div class="section-label">ENGLISH MEANING</div>
+            <div class="english-content">
+                <div class="english-meaning">Given to sudden and unaccountable changes of mood or behavior.</div>
+                <ul class="examples-list">
+                    
+                    <li>The administration of justice shouldn't be capricious or arbitrary.</li>
+                    
+                    <li>Her capricious behavior made it difficult to maintain a stable relationship.</li>
+                    
+                    <li>We cannot rely on the capricious weather of this region for our outdoor event.</li>
+                    
+                </ul>
+            </div>
+
+            <div class="alternates-content">
+                <div class="alternates-label">ALTERNATE WORDS:</div>
+                
+                <span class="alternate-tag">fickle</span>
+                
+                <span class="alternate-tag">unpredictable</span>
+                
+                <span class="alternate-tag">volatile</span>
+                
+                <span class="alternate-tag">erratic</span>
+                
+                <span class="alternate-tag">whimsical</span>
+                
+            </div>
+        </div>
+
+        
+        <hr class="word-separator">
+        
+        
+        <div class="word-card color-blue">
+            <div class="word-heading">
+                <h2>Quintessential</h2>
+                <span class="part-of-speech">adjective</span>
+            </div>
+
+            <div class="section-label">HINDI MEANING</div>
+            <div class="hindi-content">
+                <div class="hindi-script">सर्वोत्कृष्ट / आदर्श / मूलतत्वीय</div>
+                <div class="transliteration">*Sarvotkrisht / Aadarsh / Mooltatviya*</div>
+            </div>
+
+            <div class="section-label">ENGLISH MEANING</div>
+            <div class="english-content">
+                <div class="english-meaning">Representing the most perfect or typical example of a quality or class.</div>
+                <ul class="examples-list">
+                    
+                    <li>Watermelon is the quintessential fruit of summer.</li>
+                    
+                    <li>He was the quintessential gentleman, always polite and helpful.</li>
+                    
+                    <li>This village is the quintessential British countryside destination.</li>
+                    
+                </ul>
+            </div>
+
+            <div class="alternates-content">
+                <div class="alternates-label">ALTERNATE WORDS:</div>
+                
+                <span class="alternate-tag">typical</span>
+                
+                <span class="alternate-tag">classic</span>
+                
+                <span class="alternate-tag">exemplary</span>
+                
+                <span class="alternate-tag">ultimate</span>
+                
+                <span class="alternate-tag">archetypal</span>
+                
+            </div>
+        </div>
+
+        
+        
+
+        
+        <div class="footer">
+            Keep learning — Day 21 coming soon!
+        </div>
+        
+    </div>
+    
+</body>
+</html>
