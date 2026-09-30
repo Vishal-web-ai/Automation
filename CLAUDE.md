@@ -40,6 +40,39 @@ Live on an Oracle free-tier VPS at **92.4.74.1**. Runbook: `vocab-bot/deploy/ORA
   `.gitattributes` pins `*.sh` and `deploy/*.service` to LF.
 - The listener log at `/var/log/vocab-listener.log` is timestamped; measure latency there.
 
+## Multi-minute Telegram replies — root cause was a SECOND listener (fixed 2026-09-30)
+
+A `/savedwords` sent right after a `/save` took ~3 min. It was not the handler
+(`saved_words_handler` is pure file I/O; 0.6s from fetch to reply). Two causes stacked:
+
+- **An orphaned root listener ran for ~49h.** Someone had started it by hand with
+  `sudo -s bash /opt/vocab-bot/vps_listener.sh`; its SSH parent died and init reparented
+  it, so it survived. It ran *alongside* the systemd one — two `getUpdates` pollers
+  sharing one `update_offset.txt`, so they clobbered each other's offset. Find any second
+  instance with `ps -eo user,pid,etimes,cmd | grep vps_listener`; there must be exactly
+  **one** tree (MainPID + its pipeline subshell). Never start the listener by hand — the
+  unit has `Restart=always` and is the only thing that should own it.
+- **Root-owned git files broke the real service.** The orphan's `push_state` wrote
+  `.git/index` and loose objects as root, so the `ubuntu` service's `git add`/`push`/
+  `fetch` all failed (`insufficient permission for adding an object`, `failed to insert
+  into database`, `unpack-objects failed`) — 85 hits in the log. The bot still replied,
+  but the VPS silently stopped self-updating (stale code) and every state push failed.
+  Fix: `sudo chown -R ubuntu:ubuntu /opt/vocab-bot`. **A `chown` alone is not enough** —
+  it was undone within minutes until the root process was killed. Check with
+  `sudo find /opt/vocab-bot -not -user ubuntu` (must be empty).
+- **Why a failed push cost ~100s of dead air.** `push_state` runs *after* `getUpdates`
+  returns, so it is pure dead time in front of the next poll. Its retry loop slept
+  5+10+15+20+25 = 75s plus 5 pushes and 5 pulls — measured 102s between the `/save`
+  reply (09:29:32) and the poll that took `/savedwords` (09:31:17). Now capped at 3
+  attempts / 1s (`tests/test_push_backoff.sh` pins it). Waiting never helped: `pull()`
+  already rebases, so a non-fast-forward is fixed on the next attempt, and a push that
+  still fails isn't lost — the commit is local and `push_state` reruns next cycle.
+
+**Order matters when diagnosing this:** a stalled reply here means *something between
+polls*, so read the gap between the `Done.` line and the next `Fetched` line first. The
+handler time is the `Fetched`→`[admin] Msg:` span and is almost never the problem.
+
+
 ## PDF delivery (6 AM IST) — has backstops now
 
 - Path: worker cron → `repository_dispatch`? No — it calls the **workflow dispatch**
