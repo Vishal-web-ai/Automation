@@ -28,6 +28,13 @@ Live on an Oracle free-tier VPS at **92.4.74.1**. Runbook: `vocab-bot/deploy/ORA
   trivial `"Say OK"` measured 17.96s. `gemini-2.5-flash` / `-lite` / `2.0-flash` all 404 on
   this key. Prompt/model/token tuning cannot improve it, so homework sends an instant ack
   and the full report follows. Don't waste time retrying this.
+- The relay's outage **family** (bounces between `503 UNAVAILABLE: high demand`, `504
+  DEADLINE_EXCEEDED`, `499 CANCELLED`, transport timeouts) is the recurring interactive
+  failure mode (10/13 09:31 UTC photo → "AI is busy"; a resend got four 503s then a 504 at
+  10:01). The Groq failover used to fire only on a spent daily quota; since `0e59a29` +
+  `f805cbc`, `_is_overload_error()` (499/503/504/transport) Groq-fallbacks just that call,
+  without the long-lived exhausted flag. Diagnose via the log's `Gemini photo extraction
+  failed after retries:` / `Gemini overloaded (503); using Groq for this photo|reply` lines.
 - `git fetch` ≈ 0.7s, so the loop syncs every 10th cycle, not every cycle.
 
 ## Gotchas that cost real time
