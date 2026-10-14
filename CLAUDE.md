@@ -96,6 +96,38 @@ handler time is the `Fetched`→`[admin] Msg:` span and is almost never the prob
 - `vps_listener.sh` uses an explicit `STATE_FILES` list (not `git add -A`), so it
   will not clobber `.last_pdf_sent`.
 
+## Class stream (2-word PDF + teacher DM) — added 2026-10-14
+
+A second, independent delivery stream for a class group. Spec:
+`vocab-bot/docs/superpowers/specs/2026-10-14-class-stream-design.md`.
+
+- **No new cron.** Workers Free caps at 5 triggers, so `class.yml` rides the words
+  cron (`30 23 * * *`) and both backstops. `index.js` dispatches
+  `[wordsPdf, classPdf]` on the words cron and `[wordsPdf, classPdf, phrasesPdf]`
+  on the backstops. The class stream is a plain daily 2-word PDF — it does **not**
+  swap to `weekly.yml` on Sunday. Pinned by `tests/test_conductor_crons.py`.
+- **`class_words.py`** imports helpers from `daily_words.py` and has its own
+  `selected_words_class.json`, `class_words_state.json`
+  (`{"day","last_grammar","taught"}`) and `.last_pdf_sent_class` marker, so the
+  owner stream is untouched. `pick_class_words` uses the class stream's own
+  `taught` cursor and **never writes** the shared 500-word bank's `## Learned Words`
+  section (word content may overlap; progress is independent).
+- **Teacher DM** drives class commands (`/setwords`, `/setgrammar`, `/classstatus`,
+  `/save`, `/savedwords`, `/remove`, `/fromsaved`, `/swapallfromsaved`); the owner
+  gets `/class*`-prefixed equivalents. The listener ignores messages in the class
+  group and treats the teacher DM as a class-only dispatcher.
+- **New env/secrets:** `TEACHER_CHAT_ID`, `CLASS_GROUP_ID` (CF worker secrets,
+  `/etc/vocab-bot.env`, and the `class.yml` GH Actions env) and `GROQ_API_KEY`
+  (`daily.yml` + `class.yml`). The worker allowlist is now
+  `[ownerChat, groupChat, teacherChat, classChat]` and the teacher is exempt from
+  the rate limiter (like the owner).
+- **Groq failover** now exists in `daily_words.py` (and therefore `class_words.py`):
+  499/503/504/transport or a per-day 429 falls back to Groq for that call;
+  per-minute 429 keeps retrying Gemini. `GROQ_TEXT_MODEL = "openai/gpt-oss-120b"`.
+- Saved-bank handlers in `telegram_listener.py` are parameterised by `path`, and
+  selection commands by `len(sel["words"])`, so one implementation serves both the
+  owner (5) and the class (2).
+
 ## Cloudflare worker deploy traps (both have bitten)
 
 - **A DO migration of `new_classes` blocks *every* deploy on the free plan** with
